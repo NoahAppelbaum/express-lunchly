@@ -81,6 +81,10 @@ router.post("/:id/add-reservation/", async function (req, res, next) {
   const numGuests = req.body.numGuests;
   const notes = req.body.notes;
 
+  if (startAt.toString() === "Invalid Date"){
+    throw new BadRequestError("Please enter a valid date and time");
+  }
+
   const reservation = new Reservation({
     customerId,
     startAt,
