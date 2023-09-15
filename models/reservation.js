@@ -27,44 +27,69 @@ class Reservation {
 
   static async getReservationsForCustomer(customerId) {
     const results = await db.query(
-          `SELECT id,
+      `SELECT id,
                   customer_id AS "customerId",
                   num_guests AS "numGuests",
                   start_at AS "startAt",
                   notes AS "notes"
            FROM reservations
            WHERE customer_id = $1`,
-        [customerId],
+      [customerId],
     );
 
     return results.rows.map(row => new Reservation(row));
   }
+
+  static async get(id) {
+    const results = await db.query(
+
+      `SELECT id,
+              customer_id AS "customerId",
+              num_guests AS "numGuests",
+              start_at AS "startAt",
+              notes AS "notes"
+           FROM reservations
+           WHERE id = $1`,
+      [id],
+    );
+
+    const reservation = results.rows[0];
+
+    if (reservation === undefined) {
+      const err = new Error(`No such reservation: ${id}`);
+      err.status = 404;
+      throw err;
+    }
+
+    return new Reservation(reservation);
+  }
+
 
   /** save this reservation. */
 
   async save() {
     if (this.id === undefined) {
       const result = await db.query(
-            `INSERT INTO reservations (customer_id, num_guests, start_at, notes)
+        `INSERT INTO reservations (customer_id, num_guests, start_at, notes)
              VALUES ($1, $2, $3, $4)
              RETURNING id`,
-          [this.customerId, this.numGuests, this.startAt, this.notes],
+        [this.customerId, this.numGuests, this.startAt, this.notes],
       );
       this.id = result.rows[0].id;
     } else {
       await db.query(
-            `UPDATE reservations
-             SET customer-id=$1,
-                 num-guests=$2,
-                 start-at=$3,
+        `UPDATE reservations
+             SET customer_id=$1,
+                 num_guests=$2,
+                 start_at=$3,
                  notes=$4
              WHERE id = $5`, [
-            this.customerId,
-            this.numGuests,
-            this.startAt,
-            this.notes,
-            this.id,
-          ],
+        this.customerId,
+        this.numGuests,
+        this.startAt,
+        this.notes,
+        this.id,
+      ],
       );
     }
   }
