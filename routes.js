@@ -10,7 +10,7 @@ const Reservation = require("./models/reservation");
 
 const router = new express.Router();
 
-/** Homepage: show list of customers. */
+/** Homepage: show list of customers. On search, show search results */
 
 router.get("/", async function (req, res, next) {
   let customers;
@@ -40,6 +40,15 @@ router.post("/add/", async function (req, res, next) {
   await customer.save();
 
   return res.redirect(`/${customer.id}/`);
+});
+
+/** Show top 10 customers, by reservations */
+
+router.get("/top-ten", async function (req, res, next) {
+
+  const customers = await Customer.getTopTen();
+
+  return res.render("customer_topten.html", { customers });
 });
 
 /** Show a customer, given their ID. */
@@ -101,5 +110,7 @@ router.post("/:id/add-reservation/", async function (req, res, next) {
 
   return res.redirect(`/${customerId}/`);
 });
+
+
 
 module.exports = router;
