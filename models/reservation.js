@@ -20,7 +20,7 @@ class Reservation {
   /** formatter for startAt */
 
   getFormattedStartAt() {
-    return moment(this.startAt).format("MMMM Do YYYY, h:mm a");
+    return moment(this.startAt).fromNow();
   }
 
   /** given a customer id, find their reservations. */
@@ -33,7 +33,8 @@ class Reservation {
                   start_at AS "startAt",
                   notes AS "notes"
            FROM reservations
-           WHERE customer_id = $1`,
+           WHERE customer_id = $1
+           ORDER BY start_at`,
       [customerId],
     );
 

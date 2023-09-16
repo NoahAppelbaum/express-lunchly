@@ -7,8 +7,10 @@ const express = require("express");
 const { BadRequestError } = require("./expressError");
 const Customer = require("./models/customer");
 const Reservation = require("./models/reservation");
+const moment = require("moment")
 
 const router = new express.Router();
+
 
 /** Homepage: show list of customers. On search, show search results */
 
